@@ -12,6 +12,8 @@ const AnswersList = props => {
                     key={index}
                     answer={answer}
                     onAnswerClick={props.onAnswerClick}
+                    state={props.state ? props.state[answer.id]: null} /*передаю state  с проверкой, если в пропс что-то есть и он не пустой,
+                                                                           то передаем sate по ансвер айди в противном случае передаем null*/
                 />
             )
         }) }
