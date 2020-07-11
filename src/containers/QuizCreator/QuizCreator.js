@@ -5,6 +5,7 @@ import Input from '../../components/UI/Input/Input'
 import Select from '../../components/UI/Select/Select'
 import {createControl, validate, validateForm} from '../../form/formFramework'
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
+import axios from '../../axios/axios-quiz' //импортируем не из просто axios а из папки которую мы создали для сокращения адреса URL
 
 function createOptionControl(number) {
     return createControl(
@@ -71,12 +72,26 @@ export default class QuizCreator extends Component {
         })
     }
 
-    createQuizHandler = event => {
+    createQuizHandler = async event=> {
         event.preventDefault()
-
-        console.log(this.state.quiz)
-        //TODO: server дальнейшая работа с серверов
-
+// запись в БД firebase через асинхронные события
+        try {
+            await axios.post('/quizes.json', this.state.quiz)
+            this.setState({
+                quiz: [],
+                isFormValid: false,
+                rightAnswerId: 1,
+                formControls: createFormControls()
+            })
+        } catch (e) {    //вывод ошибки в консоле
+            console.log(e)
+        }
+        // запись в БД
+        // axios.post('https://react-quiz-c5488.firebaseio.com/quizes.json', this.state.quiz)
+        //     .then (response =>{
+        //         console.log(response)
+        //     })
+        //     .catch(error => console.log(error)) // метод catch в случае ошибки в консоле будет выводиться error
     }
     changeHandler = (value, controlName) => {
         const formControls = { ...this.state.formControls }
