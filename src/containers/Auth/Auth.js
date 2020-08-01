@@ -3,7 +3,8 @@ import classes from './Auth.css'
 import Button from '../../components/UI/Button/Button'
 import Input from '../../components/UI/Input/Input'
 import is from 'is_js'
-import axios from 'axios'
+import {connect} from 'react-redux'
+import {auth} from '../../store/actions/auth'
 
 
 //функция проверки валидности емайл (по запросу в гугле email javascript regex) так же можно установить стороннюю библиотеку например is.js
@@ -12,7 +13,7 @@ import axios from 'axios'
 //     return re.test(String(email).toLowerCase());
 // }
 
-export default class Auth extends Component{
+class Auth extends Component{
 
     state={
         isFormValid: false,
@@ -45,32 +46,19 @@ export default class Auth extends Component{
         }
     }
 
-    loginHandler = async () => {
-        const authData ={
-            email: this.state.formControls.email.value,
-            password: this.state.formControls.password.value,
-            returnSecureToken: true
-        }
-        try {
-            const response = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyB9lPZU9CdpD_7MFQEbYks-2Y6V_GhdxBM', authData)
-            console.log(response.data)
-        } catch (e) {
-            console.log(e)
-        }
-}
-    registerHandler = async () => {
-        const authData ={
-            email: this.state.formControls.email.value,
-            password: this.state.formControls.password.value,
-            returnSecureToken: true
-        }
-        try {
-            const response = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyB9lPZU9CdpD_7MFQEbYks-2Y6V_GhdxBM', authData)
-            console.log(response.data)
-        } catch (e) {
-            console.log(e)
-        }
-
+    loginHandler =() => {
+        this.props.auth(
+            this.state.formControls.email.value,
+            this.state.formControls.password.value,
+            true
+        )
+    }
+    registerHandler =() => {
+        this.props.auth(
+            this.state.formControls.email.value,
+            this.state.formControls.password.value,
+            false
+        )
  }
 
     submitHandler = event => {
@@ -181,4 +169,12 @@ export default class Auth extends Component{
     }
 
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        auth: (email, password, isLogin) => dispatch(auth(email, password, isLogin))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Auth)
 
